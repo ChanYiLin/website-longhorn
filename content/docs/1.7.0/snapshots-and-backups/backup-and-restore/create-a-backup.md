@@ -17,3 +17,28 @@ To create a backup,
 **Result:** The backup is created. To see it, click **Backup** in the top navigation bar.
 
 For information on how to restore a volume from a snapshot, refer to [this page.](../restore-from-a-backup)
+
+## Full Backup
+
+By default, Longhorn performs delta backup on the snapshot, meaning it only backs up data that has been newly updated since the last backup. This approach enhances time efficiency and conserves network throughput. However, in the event of a corrupted data block in the backupstore, Longhorn does not replace it with a healthy one during subsequent backup operations.
+
+Starting with v1.7.0, Longhorn allows users to perform full backup to upload all the data blocks of the volume. Longhorn overrides data block on the backup store if it already exists.
+
+To create a backup,
+
+1. Navigate to the **Volume** menu.
+2. Select the volume you wish to back up.
+3. Click **Create Backup.**
+4. Add any appropriate labels.
+5. Check the "Full Backup".
+6. Click OK.
+
+## Uploaded Data Size
+
+To allow users to collect the data transfer usage of each backup, longhorn records the infomation in two metrics in the CR status.
+
+### Newly Uploaded Data Size
+`status.newlyUploadDataSize` records the size of data that has been newly uploaded to the backupstore during this backup process. In other words, it tracks the size of data blocks that did not previously exist in the backupstore and have been uploaded for the first time in the current backup operation.
+
+### Re-Uploaded Data Size
+`status.reUploadDataSize` records the size of data that already exists in the backupstore and is being overwritten during this full backup. In other words, it tracks the size of data blocks that were previously stored in the backupstore and are now being overwritten as part of the current full backup operation.
